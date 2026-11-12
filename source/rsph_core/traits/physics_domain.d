@@ -1,8 +1,5 @@
 module rsph_core.traits.physics_domain;
 
-import std.meta : allSatisfy;
-import std.traits : lvalueOf, rvalueOf;
-
 enum isPhysicsDomain(D) = __traits(compiles, {
     alias Time         = D.Time;
     alias Length       = D.Length;
@@ -16,6 +13,8 @@ enum isPhysicsDomain(D) = __traits(compiles, {
 });
 
 enum isSphDomain(D) = isPhysicsDomain!D && __traits(compiles, {
+    alias Mass                   = D.Mass;
+    alias Density                = D.Density;
     alias Pressure               = D.Pressure;
     alias SpecificInternalEnergy = D.SpecificInternalEnergy; // TODO: rename or remove
 });

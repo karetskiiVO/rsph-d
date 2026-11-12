@@ -1,7 +1,11 @@
 module rsph_core.traits.utils;
 
+import std.traits : lvalueOf, rvalueOf;
+
 template hasGetter(ObjectType, string name, DataType) {
-    enum hasGetter = is(typeof(mixin("lvalueOf!(const ObjectType)." ~ name)) == DataType);
+    enum member = "lvalueOf!(const ObjectType)." ~ name;
+    enum hasGetter = is(typeof(mixin(member)) == DataType) ||
+        is(typeof(mixin(member)) == const(DataType));
 }
 
 template hasSetter(ObjectType, string name, DataType) {
