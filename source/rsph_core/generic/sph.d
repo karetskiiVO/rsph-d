@@ -1,5 +1,9 @@
 module rsph_core.generic.sph;
 
+import rsph_core.traits.model;
+import rsph_core.traits.particle;
+import rsph_core.traits.physics_domain;
+
 // TODO: create isModel
 /// Adds m_j * W(r_i - r_j, h) to density using the model's fixed smoothing length.
 void update_density(D, Particle, Model)(ref const Model model, ref Particle particle, ref const Particle neighbour)
@@ -39,41 +43,32 @@ void calc_viscosity_acceleration(D, P, M, V)(ref const M model, ref P particle, 
     auto laplacian = model.kernel().viscosity_laplacian(particle.position - neighbour.position, model.h());
     auto viscosityFactor = dynamicViscosity / particle.density / neighbour.density;
 
-    particle.acceleration = particle.acceleration
-        + laplacian * neighbour.restMass * viscosityFactor * (neighbour.velocity - particle.velocity);
+    particle.acceleration = particle.acceleration + laplacian * neighbour.restMass * viscosityFactor * (neighbour.velocity - particle.velocity);
 }
 
 /// Returns min(max_dt, C_cfl*h/(c+v), C_a*sqrt(h/a), C_nu*h^2/nu).
 /// Inputs must be finite. Smoothing length and configuration values must be positive.
 /// State values must be nonnegative. Zero rates add no limit.
 D.Time calc_dt(D)(D.Length h, TimeStepState!(D.Length) state, TimeStepConfig!(D.Length, D.Time) config)
-if (isPhysicsDomain!D)
+    if (isPhysicsDomain!D)
 {
     auto dt = config.max_dt;
     auto signal_speed = state.max_sound_speed + state.max_speed;
     const no_rate = zero!(D.Length);
 
-    if (signal_speed > no_rate)
-    {
+    if (signal_speed > no_rate) {
         auto acoustic_dt = quantityFrom!(D.Time)(config.cfl * (h / signal_speed));
-        if (acoustic_dt < dt)
-            dt = acoustic_dt;
+        if (acoustic_dt < dt) dt = acoustic_dt;
     }
 
-    if (state.max_acceleration > no_rate)
-    {
-        auto acceleration_dt = quantityFrom!(D.Time)(
-            config.acceleration_factor * squareRoot(h / state.max_acceleration));
-        if (acceleration_dt < dt)
-            dt = acceleration_dt;
+    if (state.max_acceleration > no_rate) {
+        auto acceleration_dt = quantityFrom!(D.Time)(config.acceleration_factor * squareRoot(h / state.max_acceleration));
+        if (acceleration_dt < dt) dt = acceleration_dt;
     }
 
-    if (state.max_kinematic_viscosity > no_rate)
-    {
-        auto viscous_dt = quantityFrom!(D.Time)(
-            config.viscosity_factor * h * (h / state.max_kinematic_viscosity));
-        if (viscous_dt < dt)
-            dt = viscous_dt;
+    if (state.max_kinematic_viscosity > no_rate) {
+        auto viscous_dt = quantityFrom!(D.Time)(config.viscosity_factor * h * (h / state.max_kinematic_viscosity));
+        if (viscous_dt < dt) dt = viscous_dt;
     }
 
     return dt;

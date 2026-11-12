@@ -1,4 +1,4 @@
-module result.result;
+module types.result;
 
 public import std.sumtype : match, tryMatch;
 

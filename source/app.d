@@ -1,7 +1,11 @@
 import std.stdio;
 
+import rsph.config;
+import rsph_cpu.sph.config;
+import rsph_cpu.device;
 
 void main() {
-	int a;
-	writeln("Edit source/app.d to start your project.");
+	auto device = CPU();
+
+	auto runtime = Config!(CPU, int)(device, 1).build();
 }
