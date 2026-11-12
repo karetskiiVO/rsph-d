@@ -4,19 +4,20 @@ import rsph_core.traits.model;
 import rsph_core.traits.particle;
 import rsph_core.traits.physics_domain;
 
-// TODO: create isModel
 /// Adds m_j * W(r_i - r_j, h) to density using the model's fixed smoothing length.
 void update_density(D, Particle, Model)(ref const Model model, ref Particle particle, ref const Particle neighbour)
-    if (isSphParticle!(Particle) && isModel!(Model))
+    if (isSphParticle!Particle && isSphDensityModel!Model
+        && is(Particle.PhysicsDomain == Model.PhysicsDomain))
 {
-    auto weight = model.kernel().value(particle.position() - neighbour.position(), model.h());
+    auto weight = model.kernel().value(particle.position - neighbour.position, model.h());
 
     particle.density = particle.density + neighbour.restMass * weight;
 }
 
 /// Updates pressure using the model's equation of state and the particle's rest-frame properties.
 void calc_presure(D, Particle, Model)(ref const Model model, ref Particle particle)
-    if (isSphParticle!(Particle) && isSphModel!(Model))
+    if (isSphParticle!Particle && isSphModel!Model
+        && is(Particle.PhysicsDomain == Model.PhysicsDomain))
 {
     particle.pressure = model.equation_of_state().pressure(particle.restMassDensity, particle.specificInternalEnergy);
 }
@@ -24,7 +25,8 @@ void calc_presure(D, Particle, Model)(ref const Model model, ref Particle partic
 /// Adds the Newtonian pressure contribution from one neighbour to particle acceleration.
 /// Uses the sum of each particle's pressure divided by its squared density. Densities must be positive.
 void calc_internal_acceleration(D, Particle, Model)(ref const Model model, ref Particle particle, ref const Particle neighbour)
-    if (isSphParticle!(Particle) && isSphModel!(Model))
+    if (isSphParticle!Particle && isSphModel!Model
+        && is(Particle.PhysicsDomain == Model.PhysicsDomain))
 {
     auto particleFactor = particle.pressure / particle.density / particle.density;
     auto neighbourFactor = neighbour.pressure / neighbour.density / neighbour.density;

@@ -1,5 +1,8 @@
 module rsph_core.traits.particle;
 
+import rsph_core.traits.physics_domain : isPhysicsDomain, isSphDomain;
+import rsph_core.traits.utils : hasGetter, hasSetterAndGetter;
+
 // TODO: check thats PhysicsDomain is same
 enum isParticle(P) =
     is(P.PhysicsDomain) &&
@@ -9,7 +12,7 @@ enum isParticle(P) =
     hasSetterAndGetter!(P, "acceleration", P.PhysicsDomain.Acceleration);
 
 enum isSphParticle(P) = isParticle!P &&
-    is(isSphDomain!(P.PhysicsDomain)) &&
+    isSphDomain!(P.PhysicsDomain) &&
     hasGetter!(P, "restMass",        P.PhysicsDomain.Mass) &&
     hasGetter!(P, "restMassDensity", P.PhysicsDomain.Density) &&
     hasSetterAndGetter!(P, "density",                P.PhysicsDomain.Density) &&
