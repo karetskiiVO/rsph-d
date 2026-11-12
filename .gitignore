@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/rsph
+rsph.so
+rsph.dylib
+rsph.dll
+librsph.a
+rsph.a
+rsph.lib
+rsph-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

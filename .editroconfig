@@ -1,0 +1,4 @@
+root = true
+
+[*.{d,di}]
+dfmt_brace_style = stroustrup

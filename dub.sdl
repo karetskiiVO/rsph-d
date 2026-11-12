@@ -1,0 +1,5 @@
+name "rsph"
+description "A minimal D application."
+authors "god"
+copyright "Copyright © 2026, god"
+license "MIT"
